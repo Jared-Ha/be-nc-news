@@ -11,6 +11,6 @@ app.get("/api", (req, res, next) => {
 
 app.get("/api/topics", getAllTopics);
 
-app.use((err, request, response, next) => {
-	response.status(500).send({ message: "Internal Server Error" });
+app.use((err, req, res, next) => {
+	res.status(500).send({ message: "Internal Server Error" });
 });
