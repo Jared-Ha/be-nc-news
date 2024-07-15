@@ -13,23 +13,6 @@ afterAll(() => {
 	return connection.end();
 });
 
-describe("GET /api/topics", () => {
-	it("rGET 200 - responds with an array of topic objects with the properties 'slug' and 'description'", () => {
-		return request(app)
-			.get("/api/topics")
-			.expect(200)
-			.then(({ body: { topics } }) => {
-				expect(Array.isArray(topics)).toBe(true);
-				expect(topics.length).toBe(3);
-				topics.forEach((topic) => {
-					expect(topic).toEqual({
-						slug: expect.any(String),
-						description: expect.any(String),
-					});
-				});
-			});
-	});
-});
 describe("GET /api", () => {
 	it("GET 200 - responds with a JSON object detailing all available endpoints", () => {
 		return request(app)
@@ -55,6 +38,24 @@ describe("GET /api", () => {
 						);
 					}
 				}
+			});
+	});
+});
+
+describe("GET /api/topics", () => {
+	it("GET 200 - responds with an array of topic objects with the properties 'slug' and 'description'", () => {
+		return request(app)
+			.get("/api/topics")
+			.expect(200)
+			.then(({ body: { topics } }) => {
+				expect(Array.isArray(topics)).toBe(true);
+				expect(topics.length).toBe(3);
+				topics.forEach((topic) => {
+					expect(topic).toEqual({
+						slug: expect.any(String),
+						description: expect.any(String),
+					});
+				});
 			});
 	});
 });
@@ -92,6 +93,53 @@ describe("GET /api/articles/:article_id", () => {
 			.expect(400)
 			.then(({ body }) => {
 				expect(body.msg).toBe("Bad request");
+			});
+	});
+});
+
+describe("GET /api/articles", () => {
+	it("GET 200: responds with an articles array of article objects, with the expected properties", () => {
+		return request(app)
+			.get("/api/articles")
+			.expect(200)
+			.then(({ body: { articles } }) => {
+				expect(articles.length).toBe(13);
+				articles.forEach((article, index) => {
+					expect(article).toEqual({
+						author: expect.any(String),
+						title: expect.any(String),
+						article_id: expect.any(Number),
+						topic: expect.any(String),
+						created_at: expect.any(String),
+						votes: expect.any(Number),
+						article_img_url: expect.any(String),
+						comment_count: expect.any(Number),
+					});
+					expect(article.hasOwnProperty("body")).toBe(false);
+				});
+			});
+	});
+	it("GET 200: responds with array of articles sorted by date in descending order", () => {
+		return request(app)
+			.get("/api/articles")
+			.expect(200)
+			.then(({ body: { articles } }) => {
+				for (let i = 1; i < articles.length; i++) {
+					expect(Date.parse(articles[i - 1].created_at)).toBeGreaterThanOrEqual(
+						Date.parse(articles[i].created_at)
+					);
+				}
+			});
+	});
+	it("GET 200: responds with array of articles which have the expected corresponding comment count", () => {
+		return request(app)
+			.get("/api/articles")
+			.expect(200)
+			.then(({ body: { articles } }) => {
+				expect(articles[0].comment_count).toBe(2);
+				expect(articles[1].comment_count).toBe(1);
+				expect(articles[2].comment_count).toBe(0);
+				expect(articles[6].comment_count).toBe(11);
 			});
 	});
 });
