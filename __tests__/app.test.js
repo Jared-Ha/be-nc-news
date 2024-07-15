@@ -3,8 +3,9 @@ const app = require("../db/app.js");
 const seed = require("../db/seeds/seed.js");
 const testData = require("../db/data/test-data/index.js");
 const connection = require("../db/connection.js");
+const endpointsData = require("../endpoints.json");
 
-beforeAll(() => {
+beforeEach(() => {
 	return seed(testData);
 });
 
@@ -26,6 +27,16 @@ describe("GET /api/topics", () => {
 						description: expect.any(String),
 					});
 				});
+			});
+	});
+});
+describe("GET /api", () => {
+	it("GET 200 - responds with a JSON object detailing all available endpoints", () => {
+		return request(app)
+			.get("/api")
+			.expect(200)
+			.then(({ body: { endpoints } }) => {
+				expect(endpoints).toEqual(endpointsData);
 			});
 	});
 });
