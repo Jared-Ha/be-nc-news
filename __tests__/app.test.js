@@ -39,4 +39,59 @@ describe("GET /api", () => {
 				expect(endpoints).toEqual(endpointsData);
 			});
 	});
+	it("GET 200 - each endpoint has the correct key-value pairs", () => {
+		return request(app)
+			.get("/api")
+			.expect(200)
+			.then(({ body: { endpoints } }) => {
+				for (let endpoint in endpoints) {
+					if (endpoint !== "GET /api") {
+						expect(endpoints[endpoint].hasOwnProperty("description")).toBe(
+							true
+						);
+						expect(endpoints[endpoint].hasOwnProperty("queries")).toBe(true);
+						expect(endpoints[endpoint].hasOwnProperty("exampleResponse")).toBe(
+							true
+						);
+					}
+				}
+			});
+	});
+});
+
+describe("GET /api/articles/:article_id", () => {
+	it("GET 200 - responds with the article object that corresponds to the article ID'", () => {
+		return request(app)
+			.get("/api/articles/2")
+			.expect(200)
+			.then(({ body: { article } }) => {
+				expect(article).toEqual({
+					article_id: 2,
+					title: "Sony Vaio; or, The Laptop",
+					topic: "mitch",
+					author: "icellusedkars",
+					body: expect.any(String),
+					created_at: expect.any(String),
+					article_img_url:
+						"https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+					votes: 0,
+				});
+			});
+	});
+	it("GET 404 - sends 404 status and an error message when given a valid but non-existent article ID", () => {
+		return request(app)
+			.get("/api/articles/999")
+			.expect(404)
+			.then(({ body }) => {
+				expect(body.msg).toBe("Article does not exist");
+			});
+	});
+	it("GET 400 - sends 400 status and an error message when given an invalid article ID", () => {
+		return request(app)
+			.get("/api/articles/not-an-article")
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe("Bad request");
+			});
+	});
 });
