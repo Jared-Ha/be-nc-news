@@ -179,7 +179,7 @@ describe("GET /api/articles/:article_id/comments", () => {
 			.get("/api/articles/3/comments")
 			.expect(200)
 			.then(({ body: { comments } }) => {
-				expect(comments).toBeSorted({ key: "created_at", descending: true });
+				expect(comments).toBeSorted("created_at", { descending: true });
 			});
 	});
 	it("GET 200: responds with an empty array when an existing article ID is used, but there are no comments associated with that article yet", () => {
