@@ -4,6 +4,7 @@ const { getAllTopics } = require("./controllers/topics.controller.js");
 const {
 	getArticleById,
 	getAllArticles,
+	getArticleCommentsByArtId,
 } = require("./controllers/articles.controller.js");
 const endpointsData = require("../endpoints.json");
 
@@ -18,6 +19,8 @@ app.get("/api/topics", getAllTopics);
 app.get("/api/articles", getAllArticles);
 
 app.get("/api/articles/:article_id", getArticleById);
+
+app.get("/api/articles/:article_id/comments", getArticleCommentsByArtId);
 
 app.use((err, req, res, next) => {
 	if (err.status && err.message) {
