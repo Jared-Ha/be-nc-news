@@ -14,7 +14,7 @@ afterAll(() => {
 	return connection.end();
 });
 
-describe("GET /api", () => {
+describe("/api", () => {
 	it("GET 200 - responds with a JSON object detailing all available endpoints", () => {
 		return request(app)
 			.get("/api")
@@ -43,7 +43,7 @@ describe("GET /api", () => {
 	});
 });
 
-describe("GET /api/topics", () => {
+describe("/api/topics", () => {
 	it("GET 200 - responds with an array of topic objects with the properties 'slug' and 'description'", () => {
 		return request(app)
 			.get("/api/topics")
@@ -61,7 +61,7 @@ describe("GET /api/topics", () => {
 	});
 });
 
-describe("GET /api/articles/:article_id", () => {
+describe("/api/articles/:article_id", () => {
 	it("GET 200 - responds with the article object that corresponds to the article ID'", () => {
 		return request(app)
 			.get("/api/articles/2")
@@ -98,7 +98,7 @@ describe("GET /api/articles/:article_id", () => {
 	});
 });
 
-describe("GET /api/articles", () => {
+describe("/api/articles", () => {
 	it("GET 200: responds with an articles array of article objects, with the expected properties", () => {
 		return request(app)
 			.get("/api/articles")
@@ -145,7 +145,7 @@ describe("GET /api/articles", () => {
 	});
 });
 
-describe("GET /api/articles/:article_id/comments", () => {
+describe("/api/articles/:article_id/comments", () => {
 	it("GET 200: responds with all comments that correspond to the given article ID'", () => {
 		return request(app)
 			.get("/api/articles/3/comments")
@@ -206,9 +206,6 @@ describe("GET /api/articles/:article_id/comments", () => {
 				expect(body.msg).toBe("Bad request");
 			});
 	});
-});
-
-describe("POST /api/articles/:article_id/comments", () => {
 	it("POST 201 - inserts new comment into the db and responds with the posted comment object (including corresponding article ID)", () => {
 		const testCommentInput = {
 			username: "icellusedkars",
