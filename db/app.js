@@ -6,7 +6,10 @@ const {
 	getAllArticles,
 	getArticleCommentsByArtId,
 } = require("./controllers/articles.controller.js");
+const { postComment } = require("./controllers/comments.controller.js");
 const endpointsData = require("../endpoints.json");
+
+app.use(express.json());
 
 module.exports = app;
 
@@ -22,6 +25,8 @@ app.get("/api/articles/:article_id", getArticleById);
 
 app.get("/api/articles/:article_id/comments", getArticleCommentsByArtId);
 
+app.post("/api/articles/:article_id/comments", postComment);
+
 app.use((err, req, res, next) => {
 	if (err.status && err.message) {
 		res.status(err.status).send({ msg: err.message });
@@ -32,6 +37,20 @@ app.use((err, req, res, next) => {
 app.use((err, request, response, next) => {
 	if (err.code === "22P02") {
 		response.status(400).send({ msg: "Bad request" });
+	}
+	next(err);
+});
+
+app.use((err, request, response, next) => {
+	if (err.code === "23503" && err.constraint === "comments_article_id_fkey") {
+		response.status(404).send({ msg: "Article does not exist" });
+	}
+	next(err);
+});
+
+app.use((err, request, response, next) => {
+	if (err.code === "23503" && err.constraint === "comments_author_fkey") {
+		response.status(404).send({ msg: "Username does not exist" });
 	}
 	next(err);
 });

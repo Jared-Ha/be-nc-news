@@ -42,7 +42,7 @@
 			}
 		}
 	},
-	"GET /api/articles/:article_id/comments ": {
+	"GET /api/articles/:article_id/comments": {
 		"description": "serves all comments that correspond to the given article ID''",
 		"queries": [],
 		"exampleResponse": {
@@ -64,6 +64,18 @@
 					"created_at": "2020-06-20T07:24:00.000Z"
 				}
 			]
+		}
+	},
+	"POST /api/articles/:article_id/comments": {
+		"description": "Inserts the new comment into the database and serves the posted comment object",
+		"queries": [],
+		"exampleResponse": {
+			"comment_id": 19,
+			"votes": 0,
+			"created_at": "2024-07-16T11:18:39.064Z",
+			"author": "icellusedkars",
+			"body": "I am 100% sure that we're not completely sure",
+			"article_id": 3
 		}
 	}
 }
