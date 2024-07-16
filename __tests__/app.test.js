@@ -173,7 +173,7 @@ describe("GET /api/articles/:article_id/comments", () => {
 				});
 			});
 	});
-	it("GET 200: repsonds with most recent comments first (i.e. descending date order)", () => {
+	it("GET 200: responds with most recent comments first (i.e. descending date order)", () => {
 		return request(app)
 			.get("/api/articles/3/comments")
 			.expect(200)
@@ -199,6 +199,100 @@ describe("GET /api/articles/:article_id/comments", () => {
 			.expect(400)
 			.then(({ body }) => {
 				expect(body.msg).toBe("Bad request");
+			});
+	});
+});
+
+describe("POST /api/articles/:article_id/comments", () => {
+	it("POST 201 - inserts new comment into the db and responds with the posted comment object (including corresponding article ID)", () => {
+		const testCommentInput = {
+			username: "icellusedkars",
+			body: "test comment over herrrrrre!",
+		};
+		const expectedCommentResponse = {
+			comment_id: 19,
+			votes: 0,
+			created_at: expect.any(String),
+			author: "icellusedkars",
+			body: "test comment over herrrrrre!",
+			article_id: 1,
+		};
+		return request(app)
+			.post("/api/articles/1/comments")
+			.send(testCommentInput)
+			.expect(201)
+			.then(({ body }) => {
+				expect(body.comment).toEqual(expectedCommentResponse);
+			});
+	});
+
+	it("POST 404 - responds with error message when given a valid but non-existent article ID", () => {
+		const testCommentInput = {
+			username: "icellusedkars",
+			body: "test comment",
+		};
+		return request(app)
+			.post("/api/articles/999/comments")
+			.send(testCommentInput)
+			.expect(404)
+			.then(({ body }) => {
+				expect(body.msg).toBe("Article does not exist");
+			});
+	});
+
+	it("POST 400 - responds with an error message when given an invalid article ID", () => {
+		const testCommentInput = {
+			username: "icellusedkars",
+			body: "test comment",
+		};
+		return request(app)
+			.post("/api/articles/not-an-article/comments")
+			.send(testCommentInput)
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe("Bad request");
+			});
+	});
+
+	it("POST 404 - responds with error message when given a non-existent username", () => {
+		const testCommentInput = {
+			username: "thisIsNotAnActualUsername",
+			body: "test comment",
+		};
+		return request(app)
+			.post("/api/articles/3/comments")
+			.send(testCommentInput)
+			.expect(404)
+			.then(({ body }) => {
+				expect(body.msg).toBe("Username does not exist");
+			});
+	});
+
+	it("POST 400 - responds with an error message when the username field is empty", () => {
+		const testCommentInput = {
+			username: "",
+			body: "test comment",
+		};
+		return request(app)
+			.post("/api/articles/3/comments")
+			.send(testCommentInput)
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe("Username is empty");
+			});
+	});
+
+	it("POST 400 - responds with an error message when the comment body is empty", () => {
+		const testCommentInput = {
+			username: "icellusedkars",
+			body: "",
+		};
+		return request(app)
+			.post("/api/articles/3/comments")
+			.send(testCommentInput)
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe("Comment field is empty");
 			});
 	});
 });
