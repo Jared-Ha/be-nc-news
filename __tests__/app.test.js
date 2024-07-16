@@ -143,3 +143,62 @@ describe("GET /api/articles", () => {
 			});
 	});
 });
+
+describe("GET /api/articles/:article_id/comments", () => {
+	it("GET 200: responds with all comments that correspond to the given article ID'", () => {
+		return request(app)
+			.get("/api/articles/3/comments")
+			.expect(200)
+			.then(({ body: { comments } }) => {
+				expect(comments.length).toBe(2);
+				comments.forEach((comment) => {
+					expect(comment.article_id).toBe(3);
+				});
+			});
+	});
+	it("GET 200: comments contain the expected properties", () => {
+		return request(app)
+			.get("/api/articles/3/comments")
+			.expect(200)
+			.then(({ body: { comments } }) => {
+				comments.forEach((comment) => {
+					expect(comment).toEqual({
+						comment_id: expect.any(Number),
+						votes: expect.any(Number),
+						created_at: expect.any(String),
+						author: expect.any(String),
+						body: expect.any(String),
+						article_id: expect.any(Number),
+					});
+				});
+			});
+	});
+	it("GET 200: repsonds with most recent comments first (i.e. descending date order)", () => {
+		return request(app)
+			.get("/api/articles/3/comments")
+			.expect(200)
+			.then(({ body: { comments } }) => {
+				for (let i = 1; i < comments.length; i++) {
+					expect(Date.parse(comments[i - 1].created_at)).toBeGreaterThanOrEqual(
+						Date.parse(comments[i].created_at)
+					);
+				}
+			});
+	});
+	it("GET 404 - sends 404 status and an error message when given a valid but non-existent article ID", () => {
+		return request(app)
+			.get("/api/articles/999/comments")
+			.expect(404)
+			.then(({ body }) => {
+				expect(body.msg).toBe("Article does not exist");
+			});
+	});
+	it("GET 400 - sends 400 status and an error message when given an invalid article ID", () => {
+		return request(app)
+			.get("/api/articles/not-an-article/comments")
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe("Bad request");
+			});
+	});
+});
