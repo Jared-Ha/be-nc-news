@@ -1,4 +1,5 @@
 const db = require("../connection.js");
+const { checkArticleExists } = require("../utils/check-article-exists.js");
 
 exports.fetchArticleById = (articleId) => {
 	return db
@@ -25,18 +26,21 @@ exports.fetchAllArticles = () => {
 };
 
 exports.fetchCommentsByArtId = (article_id) => {
-	return db
-		.query(
-			"SELECT * FROM comments WHERE comments.article_id = $1 ORDER BY comments.created_at DESC",
-			[article_id]
-		)
-		.then(({ rows }) => {
-			if (rows.length === 0) {
-				return Promise.reject({
-					status: 404,
-					message: "Article does not exist",
-				});
-			}
-			return rows;
-		});
+	const promisesArray = [];
+	const queryPromise = db.query(
+		"SELECT * FROM comments WHERE comments.article_id = $1 ORDER BY comments.created_at DESC",
+		[article_id]
+	);
+	promisesArray.push(queryPromise);
+	const doesArticleExistPromise = checkArticleExists(article_id);
+	promisesArray.push(doesArticleExistPromise);
+	return Promise.all(promisesArray).then(([query, doesArticleExist]) => {
+		if (query.rows.length === 0 && !doesArticleExist) {
+			return Promise.reject({
+				status: 404,
+				message: "Article does not exist",
+			});
+		}
+		return query.rows;
+	});
 };
