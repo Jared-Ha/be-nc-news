@@ -1,4 +1,5 @@
 const request = require("supertest");
+require("jest-sorted");
 const app = require("../db/app.js");
 const seed = require("../db/seeds/seed.js");
 const testData = require("../db/data/test-data/index.js");
@@ -168,7 +169,7 @@ describe("GET /api/articles/:article_id/comments", () => {
 						created_at: expect.any(String),
 						author: expect.any(String),
 						body: expect.any(String),
-						article_id: expect.any(Number),
+						article_id: 3,
 					});
 				});
 			});
@@ -178,11 +179,7 @@ describe("GET /api/articles/:article_id/comments", () => {
 			.get("/api/articles/3/comments")
 			.expect(200)
 			.then(({ body: { comments } }) => {
-				for (let i = 1; i < comments.length; i++) {
-					expect(Date.parse(comments[i - 1].created_at)).toBeGreaterThanOrEqual(
-						Date.parse(comments[i].created_at)
-					);
-				}
+				expect(comments).toBeSorted({ key: "created_at", descending: true });
 			});
 	});
 	it("GET 404 - sends 404 status and an error message when given a valid but non-existent article ID", () => {
