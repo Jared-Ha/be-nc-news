@@ -5,6 +5,7 @@ const seed = require("../db/seeds/seed.js");
 const testData = require("../db/data/test-data/index.js");
 const connection = require("../db/connection.js");
 const endpointsData = require("../endpoints.json");
+const { checkCommentExists } = require("../db/utils/check-comment-exists.js");
 
 beforeEach(() => {
 	return seed(testData);
@@ -379,6 +380,38 @@ describe("/api/articles/:article_id/comments", () => {
 			.expect(400)
 			.then(({ body }) => {
 				expect(body.msg).toBe("Comment field is empty");
+			});
+	});
+});
+
+describe("/api/comments/:comment_id", () => {
+	it("DELETE 204 - deletes comment and responds with 204 when given a valid and existing comment ID", () => {
+		checkCommentExists(2).then((boolean) => {
+			expect(boolean).toBe(true);
+		});
+		return request(app)
+			.delete("/api/comments/2")
+			.expect(204)
+			.then(() => {
+				return checkCommentExists(2).then((boolean) => {
+					expect(boolean).toBe(false);
+				});
+			});
+	});
+	it("DELETE 404 - responds with an error message when given a valid but non-existent comment ID", () => {
+		return request(app)
+			.delete("/api/comments/999")
+			.expect(404)
+			.then(({ body }) => {
+				expect(body.msg).toBe("Comment does not exist");
+			});
+	});
+	it("DELETE 400 - responds with an error message when given an invlaid comment ID", () => {
+		return request(app)
+			.delete("/api/comments/not-a-comment")
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe("Bad request");
 			});
 	});
 });

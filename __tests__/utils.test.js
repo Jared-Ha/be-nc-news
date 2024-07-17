@@ -5,9 +5,28 @@ const {
 } = require("../db/seeds/utils");
 const { checkArticleExists } = require("../db/utils/check-article-exists");
 const connection = require("../db/connection.js");
+const { checkCommentExists } = require("../db/utils/check-comment-exists.js");
 
 afterAll(() => {
 	return connection.end();
+});
+
+describe("checkCommentExists", () => {
+	it("returns true if comment exists", () => {
+		checkCommentExists(1).then((boolean) => {
+			expect(boolean).toBe(true);
+		});
+	});
+	it("returns false if comment does not exist", () => {
+		checkCommentExists(999).then((boolean) => {
+			expect(boolean).toBe(false);
+		});
+	});
+	it("returns invalid input syntax SQL error if comment ID is invalid", () => {
+		checkCommentExists("hello").then((err) => {
+			expect(err.code).toBe("22P02");
+		});
+	});
 });
 
 describe("checkArticleExists", () => {
