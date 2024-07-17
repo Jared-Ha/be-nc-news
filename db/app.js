@@ -12,6 +12,7 @@ const {
 	deleteCommentById,
 } = require("./controllers/comments.controller.js");
 const endpointsData = require("../endpoints.json");
+const { getAllUsers } = require("./controllers/users.controller.js");
 
 app.use(express.json());
 
@@ -22,6 +23,8 @@ app.get("/api", (req, res, next) => {
 });
 
 app.get("/api/topics", getAllTopics);
+
+app.get("/api/users", getAllUsers);
 
 app.get("/api/articles", getAllArticles);
 
