@@ -7,7 +7,10 @@ const {
 	getArticleCommentsByArtId,
 	updateArticleById,
 } = require("./controllers/articles.controller.js");
-const { postComment } = require("./controllers/comments.controller.js");
+const {
+	postComment,
+	deleteCommentById,
+} = require("./controllers/comments.controller.js");
 const endpointsData = require("../endpoints.json");
 
 app.use(express.json());
@@ -29,6 +32,8 @@ app.patch("/api/articles/:article_id", updateArticleById);
 app.get("/api/articles/:article_id/comments", getArticleCommentsByArtId);
 
 app.post("/api/articles/:article_id/comments", postComment);
+
+app.delete("/api/comments/:comment_id", deleteCommentById);
 
 app.use((err, req, res, next) => {
 	if (err.status && err.message) {

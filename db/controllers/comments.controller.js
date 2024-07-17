@@ -1,4 +1,8 @@
-const { insertComment } = require("../models/comments.model");
+const {
+	insertComment,
+	removeCommentById,
+} = require("../models/comments.model");
+const { checkCommentExists } = require("../utils/check-comment-exists");
 
 exports.postComment = (req, res, next) => {
 	const { article_id } = req.params;
@@ -6,6 +10,17 @@ exports.postComment = (req, res, next) => {
 	insertComment(username, body, article_id)
 		.then((comment) => {
 			res.status(201).send({ comment });
+		})
+		.catch((err) => {
+			next(err);
+		});
+};
+
+exports.deleteCommentById = (req, res, next) => {
+	const { comment_id } = req.params;
+	removeCommentById(comment_id)
+		.then(() => {
+			res.status(204).send();
 		})
 		.catch((err) => {
 			next(err);

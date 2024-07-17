@@ -1,4 +1,5 @@
 const db = require("../connection.js");
+const { checkCommentExists } = require("../utils/check-comment-exists.js");
 
 exports.insertComment = (username, commentBody, articleId) => {
 	if (commentBody.length === 0 || !commentBody) {
@@ -15,4 +16,22 @@ exports.insertComment = (username, commentBody, articleId) => {
 		.then(({ rows }) => {
 			return rows[0];
 		});
+};
+
+exports.removeCommentById = (commentId) => {
+	return checkCommentExists(commentId).then((commentExists) => {
+		if (commentExists) {
+			return db
+				.query(`DELETE FROM comments WHERE comment_id=$1;`, [commentId])
+				.then((result) => {
+					console.log("model passed query");
+					return result;
+				});
+		} else {
+			return Promise.reject({
+				status: 404,
+				message: "Comment does not exist",
+			});
+		}
+	});
 };
