@@ -5,6 +5,7 @@ const {
 	getArticleById,
 	getAllArticles,
 	getArticleCommentsByArtId,
+	updateArticleById,
 } = require("./controllers/articles.controller.js");
 const { postComment } = require("./controllers/comments.controller.js");
 const endpointsData = require("../endpoints.json");
@@ -23,6 +24,8 @@ app.get("/api/articles", getAllArticles);
 
 app.get("/api/articles/:article_id", getArticleById);
 
+app.patch("/api/articles/:article_id", updateArticleById);
+
 app.get("/api/articles/:article_id/comments", getArticleCommentsByArtId);
 
 app.post("/api/articles/:article_id/comments", postComment);
@@ -35,7 +38,7 @@ app.use((err, req, res, next) => {
 });
 
 app.use((err, request, response, next) => {
-	if (err.code === "22P02") {
+	if (err.code === "22P02" || err.code === "23502") {
 		response.status(400).send({ msg: "Bad request" });
 	}
 	next(err);
