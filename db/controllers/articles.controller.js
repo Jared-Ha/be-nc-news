@@ -15,10 +15,17 @@ exports.getArticleById = (req, res, next) => {
 			next(err);
 		});
 };
+
 exports.getAllArticles = (req, res, next) => {
-	fetchAllArticles().then((articles) => {
-		res.status(200).send({ articles });
-	});
+	const { sort_by } = req.query;
+	const { order } = req.query;
+	fetchAllArticles(sort_by, order)
+		.then((articles) => {
+			res.status(200).send({ articles });
+		})
+		.catch((err) => {
+			next(err);
+		});
 };
 
 exports.getArticleCommentsByArtId = (req, res, next) => {

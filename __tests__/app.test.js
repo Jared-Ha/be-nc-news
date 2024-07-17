@@ -210,11 +210,7 @@ describe("/api/articles", () => {
 			.get("/api/articles")
 			.expect(200)
 			.then(({ body: { articles } }) => {
-				for (let i = 1; i < articles.length; i++) {
-					expect(Date.parse(articles[i - 1].created_at)).toBeGreaterThanOrEqual(
-						Date.parse(articles[i].created_at)
-					);
-				}
+				expect(articles).toBeSortedBy("created_at", { descending: true });
 			});
 	});
 	it("GET 200: responds with array of articles which have the expected corresponding comment count", () => {
@@ -226,6 +222,63 @@ describe("/api/articles", () => {
 				expect(articles[1].comment_count).toBe(1);
 				expect(articles[2].comment_count).toBe(0);
 				expect(articles[6].comment_count).toBe(11);
+			});
+	});
+
+	it("GET 200: responds with array of articles sorted by date (created_at) by default when no sort_ by query is given (in descending order)", () => {
+		return request(app)
+			.get("/api/articles?sort_by=")
+			.expect(200)
+			.then(({ body: { articles } }) => {
+				expect(articles).toBeSortedBy("created_at", { descending: true });
+			});
+	});
+	it("GET 200: responds with array of articles sorted by 'title' in descending order when given 'title' as sort_by query", () => {
+		return request(app)
+			.get("/api/articles?sort_by=title")
+			.expect(200)
+			.then(({ body: { articles } }) => {
+				expect(articles).toBeSortedBy("title", { descending: true });
+			});
+	});
+	it("GET 400: responds with error message when given an invalid sort_by query", () => {
+		return request(app)
+			.get("/api/articles?sort_by=notAValidColumnName")
+			.expect(400)
+			.then(({ body: { msg } }) => {
+				expect(msg).toBe("Invalid sort by query");
+			});
+	});
+	it("GET 200: responds with array of articles in descending order by default, when no order query is given", () => {
+		return request(app)
+			.get("/api/articles?order=")
+			.expect(200)
+			.then(({ body: { articles } }) => {
+				expect(articles).toBeSorted({ descending: true });
+			});
+	});
+	it("GET 200: responds with array of articles in ascending order by date when given ASC as the order query", () => {
+		return request(app)
+			.get("/api/articles?order=ASC")
+			.expect(200)
+			.then(({ body: { articles } }) => {
+				expect(articles).toBeSortedBy("created_at", { descending: false });
+			});
+	});
+	it("GET 200: responds with array of articles sorted by 'author' in ascending order, when the queries are sort_by=author and order=ASC", () => {
+		return request(app)
+			.get("/api/articles?sort_by=author&order=ASC")
+			.expect(200)
+			.then(({ body: { articles } }) => {
+				expect(articles).toBeSortedBy("author", { descending: false });
+			});
+	});
+	it("GET 400: responds with error message when given an invalid order query", () => {
+		return request(app)
+			.get("/api/articles?order=invalidOrderQuery")
+			.expect(400)
+			.then(({ body: { msg } }) => {
+				expect(msg).toBe("Invalid order query");
 			});
 	});
 });
@@ -264,7 +317,7 @@ describe("/api/articles/:article_id/comments", () => {
 			.get("/api/articles/3/comments")
 			.expect(200)
 			.then(({ body: { comments } }) => {
-				expect(comments).toBeSorted("created_at", { descending: true });
+				expect(comments).toBeSortedBy("created_at", { descending: true });
 			});
 	});
 	it("GET 200: responds with an empty array when an existing article ID is used, but there are no comments associated with that article yet", () => {

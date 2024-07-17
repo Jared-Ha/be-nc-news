@@ -10,10 +10,20 @@
 		}
 	},
 	"GET /api/articles": {
-		"description": "serves an array of all articles",
+		"description": "serves an array of all articles (by default the articles will be sorted by date created, and in descending order)",
 		"queries": ["author", "topic", "sort_by", "order"],
 		"exampleResponse": {
 			"articles": [
+				{
+					"author": "icellusedkars",
+					"title": "Eight pug gifs that remind me of mitch",
+					"article_id": 3,
+					"topic": "mitch",
+					"created_at": "2020-11-03T09:12:00.000Z",
+					"votes": 0,
+					"article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+					"comment_count": 2
+				},
 				{
 					"title": "Seafood substitutions are increasing",
 					"topic": "cooking",
