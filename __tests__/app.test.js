@@ -96,6 +96,90 @@ describe("/api/articles/:article_id", () => {
 				expect(body.msg).toBe("Bad request");
 			});
 	});
+	it("PATCH 200 : increments the number of votes for the article ID, by the number sent in the request", () => {
+		const patchVotes = { inc_votes: 1 };
+		const expectedUpdatedArticle = {
+			article_id: 3,
+			title: "Eight pug gifs that remind me of mitch",
+			topic: "mitch",
+			author: "icellusedkars",
+			body: "some gifs",
+			created_at: expect.any(String),
+			article_img_url:
+				"https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+			votes: 1,
+		};
+		return request(app)
+			.patch("/api/articles/3")
+			.send(patchVotes)
+			.expect(200)
+			.then(({ body: { updatedArticle } }) => {
+				expect(updatedArticle).toEqual(expectedUpdatedArticle);
+			});
+	});
+
+	it("PATCH 200 : decrements the number of votes for the article ID, by the number sent in the request", () => {
+		const patchVotes = { inc_votes: -5 };
+		const expectedUpdatedArticle = {
+			article_id: 3,
+			title: "Eight pug gifs that remind me of mitch",
+			topic: "mitch",
+			author: "icellusedkars",
+			body: "some gifs",
+			created_at: expect.any(String),
+			article_img_url:
+				"https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+			votes: -5,
+		};
+		return request(app)
+			.patch("/api/articles/3")
+			.send(patchVotes)
+			.expect(200)
+			.then(({ body: { updatedArticle } }) => {
+				expect(updatedArticle).toEqual(expectedUpdatedArticle);
+			});
+	});
+
+	it("PATCH 404 - sends an error message when given a valid but non-existent article ID", () => {
+		const patchVotes = { inc_votes: 1 };
+		return request(app)
+			.patch("/api/articles/99")
+			.send(patchVotes)
+			.expect(404)
+			.then(({ body }) => {
+				expect(body.msg).toBe("Article does not exist");
+			});
+	});
+	it("PATCH 400 - sends an error message when given an invalid article ID", () => {
+		const patchVotes = { inc_votes: 1 };
+		return request(app)
+			.patch("/api/articles/not-an-article")
+			.send(patchVotes)
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe("Bad request");
+			});
+	});
+	it("PATCH 400 - sends an error message when given a valid and existing article ID, but inc_votes is NaN", () => {
+		const patchVotes = { inc_votes: "dropdemtables" };
+		return request(app)
+			.patch("/api/articles/2")
+			.send(patchVotes)
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe("Bad request");
+			});
+	});
+	it("PATCH 400 - sends error message when request does not include inc_votes property ", () => {
+		const patchVotes = { test_property: "sup" };
+		return request(app)
+			.patch("/api/articles/2")
+			.send(patchVotes)
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe("Bad request");
+			});
+	});
 });
 
 describe("/api/articles", () => {
