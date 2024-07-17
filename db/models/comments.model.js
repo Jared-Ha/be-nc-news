@@ -24,7 +24,6 @@ exports.removeCommentById = (commentId) => {
 			return db
 				.query(`DELETE FROM comments WHERE comment_id=$1;`, [commentId])
 				.then((result) => {
-					console.log("model passed query");
 					return result;
 				});
 		} else {
