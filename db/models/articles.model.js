@@ -15,7 +15,7 @@ exports.fetchArticleById = (articleId) => {
 		});
 };
 
-exports.fetchAllArticles = (sortBy = "created_at", order = "DESC") => {
+exports.fetchAllArticles = (sortBy = "created_at", order = "DESC", topic) => {
 	if (order === "") order = "DESC";
 	if (sortBy === "") sortBy = "created_at";
 	const greenListSortBy = [
@@ -36,9 +36,18 @@ exports.fetchAllArticles = (sortBy = "created_at", order = "DESC") => {
 		return Promise.reject({ status: 400, message: "Invalid order query" });
 	}
 	let sqlString =
-		"SELECT articles.author, articles.title,articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.article_id)::INT AS comment_count FROM articles LEFT JOIN comments ON articles.article_id=comments.article_id GROUP BY articles.article_id";
-	sqlString += ` ORDER BY ${sortBy} ${order};`;
+		"SELECT articles.author, articles.title,articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.article_id)::INT AS comment_count FROM articles LEFT JOIN comments ON articles.article_id=comments.article_id";
+	if (topic) {
+		sqlString += ` WHERE articles.topic = '${topic}'`;
+	}
+	sqlString += ` GROUP BY articles.article_id ORDER BY ${sortBy} ${order};`;
 	return db.query(sqlString).then(({ rows }) => {
+		if (rows.length === 0) {
+			return Promise.reject({
+				status: 404,
+				message: "No articles found on that topic",
+			});
+		}
 		return rows;
 	});
 };

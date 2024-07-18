@@ -281,6 +281,33 @@ describe("/api/articles", () => {
 				expect(msg).toBe("Invalid order query");
 			});
 	});
+	it("GET 200: responds with an array of articles that match the given topic query", () => {
+		return request(app)
+			.get("/api/articles?topic=cats")
+			.expect(200)
+			.then(({ body: { articles } }) => {
+				expect(articles.length).toBe(1);
+				articles.forEach((article) => {
+					expect(article.topic).toBe("cats");
+				});
+			});
+	});
+	it("GET 404: responds with error message when there are no articles found on that topic", () => {
+		return request(app)
+			.get("/api/articles?topic=sillysausages")
+			.expect(404)
+			.then(({ body: { msg } }) => {
+				expect(msg).toBe("No articles found on that topic");
+			});
+	});
+	it("GET 404: responds with error if SQL injection is attempted", () => {
+		return request(app)
+			.get("/api/articles?topic=cats;DROP ALL TABLES;")
+			.expect(404)
+			.then(({ body: { msg } }) => {
+				expect(msg).toBe("No articles found on that topic");
+			});
+	});
 });
 
 describe("/api/articles/:article_id/comments", () => {
