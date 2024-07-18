@@ -1,18 +1,18 @@
 const express = require("express");
 const app = express();
-const { getAllTopics } = require("./controllers/topics.controller.js");
+const { getAllTopics } = require("./db/controllers/topics.controller.js");
 const {
 	getArticleById,
 	getAllArticles,
 	getArticleCommentsByArtId,
 	updateArticleById,
-} = require("./controllers/articles.controller.js");
+} = require("./db/controllers/articles.controller.js");
 const {
 	postComment,
 	deleteCommentById,
-} = require("./controllers/comments.controller.js");
-const endpointsData = require("../endpoints.json");
-const { getAllUsers } = require("./controllers/users.controller.js");
+} = require("./db/controllers/comments.controller.js");
+const endpointsData = require("./endpoints.json");
+const { getAllUsers } = require("./db/controllers/users.controller.js");
 
 app.use(express.json());
 
