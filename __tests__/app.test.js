@@ -65,15 +65,15 @@ describe("/api/topics", () => {
 describe("/api/articles/:article_id", () => {
 	it("GET 200 - responds with the article object that corresponds to the article ID'", () => {
 		return request(app)
-			.get("/api/articles/2")
+			.get("/api/articles/3")
 			.expect(200)
 			.then(({ body: { article } }) => {
 				expect(article).toEqual({
-					article_id: 2,
-					title: "Sony Vaio; or, The Laptop",
+					article_id: 3,
+					title: "Eight pug gifs that remind me of mitch",
 					topic: "mitch",
 					author: "icellusedkars",
-					body: expect.any(String),
+					body: "some gifs",
 					created_at: expect.any(String),
 					article_img_url:
 						"https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
@@ -118,7 +118,6 @@ describe("/api/articles/:article_id", () => {
 				expect(updatedArticle).toEqual(expectedUpdatedArticle);
 			});
 	});
-
 	it("PATCH 200 : decrements the number of votes for the article ID, by the number sent in the request", () => {
 		const patchVotes = { inc_votes: -5 };
 		const expectedUpdatedArticle = {
@@ -140,7 +139,6 @@ describe("/api/articles/:article_id", () => {
 				expect(updatedArticle).toEqual(expectedUpdatedArticle);
 			});
 	});
-
 	it("PATCH 404 - sends an error message when given a valid but non-existent article ID", () => {
 		const patchVotes = { inc_votes: 1 };
 		return request(app)
