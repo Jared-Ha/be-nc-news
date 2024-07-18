@@ -291,22 +291,30 @@ describe("/api/articles", () => {
 				});
 			});
 	});
-	it("GET 404: responds with error message when there are no articles found on that topic", () => {
+	it("GET 200: responds with an empty array when topic exists but there are no articles", () => {
 		return request(app)
-			.get("/api/articles?topic=sillysausages")
-			.expect(404)
-			.then(({ body: { msg } }) => {
-				expect(msg).toBe("No articles found on that topic");
+			.get("/api/articles?topic=paper")
+			.expect(200)
+			.then(({ body: { articles } }) => {
+				expect(articles).toEqual([]);
 			});
 	});
-	it("GET 404: responds with error if SQL injection is attempted", () => {
-		return request(app)
-			.get("/api/articles?topic=cats;DROP ALL TABLES;")
-			.expect(404)
-			.then(({ body: { msg } }) => {
-				expect(msg).toBe("No articles found on that topic");
-			});
-	});
+});
+it("GET 404: responds with error message when the topic does not exist in the DB yest", () => {
+	return request(app)
+		.get("/api/articles?topic=sillysausages")
+		.expect(404)
+		.then(({ body: { msg } }) => {
+			expect(msg).toBe("Topic not found");
+		});
+});
+it("GET 404: responds with error if SQL injection is attempted", () => {
+	return request(app)
+		.get("/api/articles?topic=cats;DROP ALL TABLES;")
+		.expect(404)
+		.then(({ body: { msg } }) => {
+			expect(msg).toBe("Topic not found");
+		});
 });
 
 describe("/api/articles/:article_id/comments", () => {

@@ -1,5 +1,6 @@
 const db = require("../connection.js");
 const { checkArticleExists } = require("../utils/check-article-exists.js");
+const { checkTopicExists } = require("../utils/check-topic-exists.js");
 
 exports.fetchArticleById = (articleId) => {
 	return db
@@ -44,14 +45,21 @@ exports.fetchAllArticles = (sortBy = "created_at", order = "DESC", topic) => {
 		sqlString += ` WHERE articles.topic = '${topic}'`;
 	}
 	sqlString += ` GROUP BY articles.article_id ORDER BY ${sortBy} ${order};`;
-	return db.query(sqlString).then(({ rows }) => {
-		if (rows.length === 0) {
+	const promisesArray = [];
+	const sqlQueryPromise = db.query(sqlString);
+	promisesArray.push(sqlQueryPromise);
+	const topicExistsPromise = checkTopicExists(topic);
+	if (topic) {
+		promisesArray.push(topicExistsPromise);
+	}
+	return Promise.all(promisesArray).then(([queryResult, topicExists]) => {
+		if (topic && topicExists === false) {
 			return Promise.reject({
 				status: 404,
-				message: "No articles found on that topic",
+				message: "Topic not found",
 			});
 		}
-		return rows;
+		return queryResult.rows;
 	});
 };
 

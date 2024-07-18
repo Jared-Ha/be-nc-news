@@ -6,9 +6,22 @@ const {
 const { checkArticleExists } = require("../db/utils/check-article-exists");
 const connection = require("../db/connection.js");
 const { checkCommentExists } = require("../db/utils/check-comment-exists.js");
+const { checkTopicExists } = require("../db/utils/check-topic-exists.js");
 
 afterAll(() => {
 	return connection.end();
+});
+describe("checkTopicExists", () => {
+	it("returns true if topic exists", () => {
+		checkTopicExists("cats").then((boolean) => {
+			expect(boolean).toBe(true);
+		});
+	});
+	it("returns false if topic does not exist", () => {
+		checkTopicExists("not-a-topic-yet").then((boolean) => {
+			expect(boolean).toBe(false);
+		});
+	});
 });
 
 describe("checkCommentExists", () => {
