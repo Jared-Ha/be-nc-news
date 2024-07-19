@@ -520,25 +520,27 @@ describe("/api/users", () => {
 				});
 			});
 	});
-	it("GET 200: responds with a single user object that matches the username given (username, avatar_url, name)", () => {
-		return request(app)
-			.get("/api/users/butter_bridge")
-			.expect(200)
-			.then(({ body: { user } }) => {
-				expect(user).toEqual({
-					username: "butter_bridge",
-					name: "jonny",
-					avatar_url:
-						"https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+	describe("/api/users/:username", () => {
+		it("GET 200: responds with a single user object that matches the username given (username, avatar_url, name)", () => {
+			return request(app)
+				.get("/api/users/butter_bridge")
+				.expect(200)
+				.then(({ body: { user } }) => {
+					expect(user).toEqual({
+						username: "butter_bridge",
+						name: "jonny",
+						avatar_url:
+							"https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+					});
 				});
-			});
-	});
-	it("GET 404: responds with error messagewhen username does not exist in DB", () => {
-		return request(app)
-			.get("/api/users/non-existent-user")
-			.expect(404)
-			.then(({ body }) => {
-				expect(body.msg).toBe("User does not exist");
-			});
+		});
+		it("GET 404: responds with error messagewhen username does not exist in DB", () => {
+			return request(app)
+				.get("/api/users/non-existent-user")
+				.expect(404)
+				.then(({ body }) => {
+					expect(body.msg).toBe("User does not exist");
+				});
+		});
 	});
 });
