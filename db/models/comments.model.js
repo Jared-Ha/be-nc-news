@@ -34,3 +34,19 @@ exports.removeCommentById = (commentId) => {
 		}
 	});
 };
+exports.patchCommentById = (incVotes, commentId) => {
+	return db
+		.query(
+			"UPDATE comments SET votes = votes + $1 WHERE comment_id = $2 RETURNING *",
+			[incVotes, commentId]
+		)
+		.then(({ rows }) => {
+			if (rows.length === 0) {
+				return Promise.reject({
+					status: 404,
+					message: "Comment does not exist",
+				});
+			}
+			return rows[0];
+		});
+};

@@ -15,7 +15,6 @@ exports.fetchUserByUsername = (userId) => {
 		)
 		.then(({ rows }) => {
 			if (rows.length === 0) {
-				console.log("hello in reject");
 				return Promise.reject({
 					status: 404,
 					message: "User does not exist",
