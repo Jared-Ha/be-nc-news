@@ -11,32 +11,14 @@ const {
 	postComment,
 	deleteCommentById,
 } = require("./db/controllers/comments.controller.js");
-const endpointsData = require("./endpoints.json");
 const { getAllUsers } = require("./db/controllers/users.controller.js");
+const apiRouter = require("./db/routers/api-router.js");
 
 app.use(express.json());
 
 module.exports = app;
 
-app.get("/api", (req, res, next) => {
-	res.status(200).send({ endpoints: endpointsData });
-});
-
-app.get("/api/topics", getAllTopics);
-
-app.get("/api/users", getAllUsers);
-
-app.get("/api/articles", getAllArticles);
-
-app.get("/api/articles/:article_id", getArticleById);
-
-app.patch("/api/articles/:article_id", updateArticleById);
-
-app.get("/api/articles/:article_id/comments", getArticleCommentsByArtId);
-
-app.post("/api/articles/:article_id/comments", postComment);
-
-app.delete("/api/comments/:comment_id", deleteCommentById);
+app.use("/api", apiRouter);
 
 app.use((err, req, res, next) => {
 	if (err.status && err.message) {
