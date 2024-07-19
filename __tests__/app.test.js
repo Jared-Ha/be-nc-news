@@ -501,6 +501,82 @@ describe("/api/comments/:comment_id", () => {
 				expect(body.msg).toBe("Bad request");
 			});
 	});
+	it("PATCH 200 : increments the number of votes for the comment ID, by the number sent in the request", () => {
+		const patchVotes = { inc_votes: 3 };
+		const expectedUpdatedComment = {
+			comment_id: 1,
+			votes: 19,
+			created_at: "2020-04-06T12:17:00.000Z",
+			author: "butter_bridge",
+			body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+			article_id: 9,
+		};
+		return request(app)
+			.patch("/api/comments/1")
+			.send(patchVotes)
+			.expect(200)
+			.then(({ body: { updatedComment } }) => {
+				expect(updatedComment).toEqual(expectedUpdatedComment);
+			});
+	});
+	it("PATCH 200 : decrements the number of votes for the comment ID, by the number sent in the request", () => {
+		const patchVotes = { inc_votes: -4 };
+		const expectedUpdatedComment = {
+			comment_id: 1,
+			votes: 12,
+			created_at: "2020-04-06T12:17:00.000Z",
+			author: "butter_bridge",
+			body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+			article_id: 9,
+		};
+		return request(app)
+			.patch("/api/comments/1")
+			.send(patchVotes)
+			.expect(200)
+			.then(({ body: { updatedComment } }) => {
+				expect(updatedComment).toEqual(expectedUpdatedComment);
+			});
+	});
+	it("PATCH 404 - sends an error message when given a valid but non-existent comment ID", () => {
+		const patchVotes = { inc_votes: 1 };
+		return request(app)
+			.patch("/api/comments/999")
+			.send(patchVotes)
+			.expect(404)
+			.then(({ body }) => {
+				expect(body.msg).toBe("Comment does not exist");
+			});
+	});
+	it("PATCH 400 - sends an error message when given an invalid comment article ID", () => {
+		const patchVotes = { inc_votes: 1 };
+		return request(app)
+			.patch("/api/comments/not-a-comment-id")
+			.send(patchVotes)
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe("Bad request");
+			});
+	});
+	it("PATCH 400 - sends an error message when given a valid and existing comment ID, but inc_votes is NaN", () => {
+		const patchVotes = { inc_votes: "dropdemtables" };
+		return request(app)
+			.patch("/api/comments/4")
+			.send(patchVotes)
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe("Bad request");
+			});
+	});
+	it("PATCH 400 - sends error message when request does not include inc_votes property ", () => {
+		const patchVotes = { test_property: "sup" };
+		return request(app)
+			.patch("/api/comments/3")
+			.send(patchVotes)
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe("Bad request");
+			});
+	});
 });
 
 describe("/api/users", () => {
