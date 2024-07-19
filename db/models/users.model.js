@@ -1,5 +1,4 @@
 const db = require("../connection.js");
-const { checkUserExists } = require("../utils/check-user-exists.js");
 
 exports.fetchAllUsers = () => {
 	return db.query("SELECT * FROM  users;").then((result) => {
