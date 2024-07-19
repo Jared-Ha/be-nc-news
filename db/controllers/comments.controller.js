@@ -2,7 +2,6 @@ const {
 	insertComment,
 	removeCommentById,
 } = require("../models/comments.model");
-const { checkCommentExists } = require("../utils/check-comment-exists");
 
 exports.postComment = (req, res, next) => {
 	const { article_id } = req.params;
