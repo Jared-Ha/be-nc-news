@@ -13,10 +13,11 @@ const {
 } = require("./db/controllers/comments.controller.js");
 const { getAllUsers } = require("./db/controllers/users.controller.js");
 const apiRouter = require("./db/routers/api-router.js");
+const cors = require("cors");
+
+app.use(cors());
 
 app.use(express.json());
-
-module.exports = app;
 
 app.use("/api", apiRouter);
 
@@ -51,3 +52,5 @@ app.use((err, request, response, next) => {
 app.use((err, req, res, next) => {
 	res.status(500).send({ message: "Internal Server Error" });
 });
+
+module.exports = app;
