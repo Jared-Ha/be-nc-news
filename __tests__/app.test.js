@@ -56,6 +56,7 @@ describe("/api/topics", () => {
 					expect(topic).toEqual({
 						slug: expect.any(String),
 						description: expect.any(String),
+						topic_img_url: expect.any(String),
 					});
 				});
 			});
