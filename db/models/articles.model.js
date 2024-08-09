@@ -51,9 +51,9 @@ exports.fetchAllArticles = (
 	}
 	if (searchTerm) {
 		if (topic) {
-			sqlString += ` AND (articles.title ILIKE '%${searchTerm}%' OR articles.body ILIKE '%${searchTerm}%')`;
+			sqlString += ` AND (articles.title ~* '\\y${searchTerm}' OR articles.body ~* '\\y${searchTerm}')`;
 		} else {
-			sqlString += ` WHERE (articles.title ILIKE '%${searchTerm}%' OR articles.body ILIKE '%${searchTerm}%')`;
+			sqlString += ` WHERE (articles.title ~* '\\y${searchTerm}' OR articles.body ~* '\\y${searchTerm}')`;
 		}
 	}
 
@@ -79,7 +79,6 @@ exports.fetchAllArticles = (
 				message: "Zero articles found",
 			});
 		}
-
 		return queryResult.rows;
 	});
 };

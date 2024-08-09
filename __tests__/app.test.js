@@ -224,7 +224,6 @@ describe("/api/articles", () => {
 				expect(articles[6].comment_count).toBe(11);
 			});
 	});
-
 	it("GET 200: responds with array of articles sorted by date (created_at) by default when no sort_ by query is given (in descending order)", () => {
 		return request(app)
 			.get("/api/articles?sort_by=")
@@ -273,7 +272,6 @@ describe("/api/articles", () => {
 				expect(articles).toBeSortedBy("author", { descending: false });
 			});
 	});
-
 	it("GET 404: responds with error when searchTerm is not conatined in any articles or article titles", () => {
 		return request(app)
 			.get("/api/articles?searchTerm=dagadffgds")
@@ -377,7 +375,6 @@ describe("/api/articles", () => {
 				]);
 			});
 	});
-
 	it("GET 400: responds with error message when given an invalid order query", () => {
 		return request(app)
 			.get("/api/articles?order=invalidOrderQuery")
@@ -505,7 +502,6 @@ describe("/api/articles/:article_id/comments", () => {
 				expect(body.comment).toEqual(expectedCommentResponse);
 			});
 	});
-
 	it("POST 404 - responds with error message when given a valid but non-existent article ID", () => {
 		const testCommentInput = {
 			username: "icellusedkars",
@@ -519,7 +515,6 @@ describe("/api/articles/:article_id/comments", () => {
 				expect(body.msg).toBe("Article does not exist");
 			});
 	});
-
 	it("POST 400 - responds with an error message when given an invalid article ID", () => {
 		const testCommentInput = {
 			username: "icellusedkars",
@@ -533,7 +528,6 @@ describe("/api/articles/:article_id/comments", () => {
 				expect(body.msg).toBe("Bad request");
 			});
 	});
-
 	it("POST 404 - responds with error message when given a non-existent username", () => {
 		const testCommentInput = {
 			username: "thisIsNotAnActualUsername",
@@ -547,7 +541,6 @@ describe("/api/articles/:article_id/comments", () => {
 				expect(body.msg).toBe("Username does not exist");
 			});
 	});
-
 	it("POST 400 - responds with an error message when the username field is empty", () => {
 		const testCommentInput = {
 			username: "",
@@ -561,7 +554,6 @@ describe("/api/articles/:article_id/comments", () => {
 				expect(body.msg).toBe("Username is empty");
 			});
 	});
-
 	it("POST 400 - responds with an error message when the comment body is empty", () => {
 		const testCommentInput = {
 			username: "icellusedkars",
