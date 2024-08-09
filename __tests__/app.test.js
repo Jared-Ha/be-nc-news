@@ -274,7 +274,7 @@ describe("/api/articles", () => {
 			});
 	});
 
-	it.only("GET 404: responds with error when searchTerm is not conatined in any articles or article titles", () => {
+	it("GET 404: responds with error when searchTerm is not conatined in any articles or article titles", () => {
 		return request(app)
 			.get("/api/articles?searchTerm=dagadffgds")
 			.expect(404)
