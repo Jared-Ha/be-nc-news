@@ -273,6 +273,111 @@ describe("/api/articles", () => {
 				expect(articles).toBeSortedBy("author", { descending: false });
 			});
 	});
+
+	it.only("GET 404: responds with error when searchTerm is not conatined in any articles or article titles", () => {
+		return request(app)
+			.get("/api/articles?searchTerm=dagadffgds")
+			.expect(404)
+			.then(({ body: { msg } }) => {
+				expect(msg).toBe("Zero articles found");
+			});
+	});
+	it("GET 200: responds with array of articles that match the search query when the query is searchTerm=cat", () => {
+		return request(app)
+			.get("/api/articles?searchTerm=cat")
+			.expect(200)
+			.then(({ body: { articles } }) => {
+				expect(articles).toEqual([
+					{
+						article_id: 6,
+						article_img_url:
+							"https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+						author: "icellusedkars",
+						created_at: "2020-10-18T01:00:00.000Z",
+						title: "A",
+						topic: "mitch",
+						votes: 0,
+						comment_count: 1,
+					},
+					{
+						article_id: 2,
+						article_img_url:
+							"https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+						author: "icellusedkars",
+						created_at: "2020-10-16T05:03:00.000Z",
+						title: "Sony Vaio; or, The Laptop",
+						topic: "mitch",
+						votes: 0,
+						comment_count: 0,
+					},
+					{
+						article_id: 5,
+						article_img_url:
+							"https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+						author: "rogersop",
+						created_at: "2020-08-03T13:14:00.000Z",
+						title: "UNCOVERED: catspiracy to bring down democracy",
+						topic: "cats",
+						votes: 0,
+						comment_count: 2,
+					},
+					{
+						article_id: 11,
+						article_img_url:
+							"https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+						author: "icellusedkars",
+						created_at: "2020-01-15T22:21:00.000Z",
+						title: "Am I a cat?",
+						topic: "mitch",
+						votes: 0,
+						comment_count: 0,
+					},
+				]);
+			});
+	});
+	it("GET 200: responds with array of articles that match the search query and topic querywhen the queries are searchTerm=cat and topic=mitch", () => {
+		return request(app)
+			.get("/api/articles?searchTerm=cat&topic=mitch")
+			.expect(200)
+			.then(({ body: { articles } }) => {
+				expect(articles).toEqual([
+					{
+						article_id: 6,
+						article_img_url:
+							"https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+						author: "icellusedkars",
+						created_at: "2020-10-18T01:00:00.000Z",
+						title: "A",
+						topic: "mitch",
+						votes: 0,
+						comment_count: 1,
+					},
+					{
+						article_id: 2,
+						article_img_url:
+							"https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+						author: "icellusedkars",
+						created_at: "2020-10-16T05:03:00.000Z",
+						title: "Sony Vaio; or, The Laptop",
+						topic: "mitch",
+						votes: 0,
+						comment_count: 0,
+					},
+					{
+						article_id: 11,
+						article_img_url:
+							"https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+						author: "icellusedkars",
+						created_at: "2020-01-15T22:21:00.000Z",
+						title: "Am I a cat?",
+						topic: "mitch",
+						votes: 0,
+						comment_count: 0,
+					},
+				]);
+			});
+	});
+
 	it("GET 400: responds with error message when given an invalid order query", () => {
 		return request(app)
 			.get("/api/articles?order=invalidOrderQuery")
@@ -300,7 +405,7 @@ describe("/api/articles", () => {
 				expect(articles).toEqual([]);
 			});
 	});
-	it("GET 404: responds with error message when the topic does not exist in the DB yest", () => {
+	it("GET 404: responds with error message when the topic does not exist in the DB yet", () => {
 		return request(app)
 			.get("/api/articles?topic=sillysausages")
 			.expect(404)

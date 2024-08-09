@@ -20,7 +20,8 @@ exports.getAllArticles = (req, res, next) => {
 	const { sort_by } = req.query;
 	const { order } = req.query;
 	const { topic } = req.query;
-	fetchAllArticles(sort_by, order, topic)
+	const { searchTerm } = req.query;
+	fetchAllArticles(sort_by, order, topic, searchTerm)
 		.then((articles) => {
 			res.status(200).send({ articles });
 		})

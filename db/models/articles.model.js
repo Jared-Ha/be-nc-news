@@ -19,7 +19,12 @@ exports.fetchArticleById = (articleId) => {
 		});
 };
 
-exports.fetchAllArticles = (sortBy = "created_at", order = "DESC", topic) => {
+exports.fetchAllArticles = (
+	sortBy = "created_at",
+	order = "DESC",
+	topic,
+	searchTerm
+) => {
 	if (order === "") order = "DESC";
 	if (sortBy === "") sortBy = "created_at";
 	const greenListSortBy = [
@@ -44,7 +49,16 @@ exports.fetchAllArticles = (sortBy = "created_at", order = "DESC", topic) => {
 	if (topic) {
 		sqlString += ` WHERE articles.topic = '${topic}'`;
 	}
+	if (searchTerm) {
+		if (topic) {
+			sqlString += ` AND (articles.title ILIKE '%${searchTerm}%' OR articles.body ILIKE '%${searchTerm}%')`;
+		} else {
+			sqlString += ` WHERE (articles.title ILIKE '%${searchTerm}%' OR articles.body ILIKE '%${searchTerm}%')`;
+		}
+	}
+
 	sqlString += ` GROUP BY articles.article_id ORDER BY ${sortBy} ${order};`;
+
 	const promisesArray = [];
 	const sqlQueryPromise = db.query(sqlString);
 	promisesArray.push(sqlQueryPromise);
@@ -59,6 +73,13 @@ exports.fetchAllArticles = (sortBy = "created_at", order = "DESC", topic) => {
 				message: "Topic not found",
 			});
 		}
+		if (searchTerm && queryResult.rows.length === 0) {
+			return Promise.reject({
+				status: 404,
+				message: "Zero articles found",
+			});
+		}
+
 		return queryResult.rows;
 	});
 };
